@@ -132,15 +132,29 @@ def parse_args():
 
     return parser.parse_args()
 
-def build_shell_model():
+def export_to_xml(materials, geometry, tallies, settings):
+    """
+    Export all model elements to XML files.
+    """
+    materials.export_to_xml()
+    geometry.export_to_xml()
+    tallies.export_to_xml()
+    settings.export_to_xml()
 
+def build_shell_model():
+    """
+    Build OpenMC shell model using arguments from command-line
+    """
     args = parse_args()
-    materials = create_materials(args.element, args.density)
+    materials = creatge_materials(args.element, args.density)
     geometry = create_geometry(args.inner_radius, args.inner_radius + args.thickness, materials[0])
     source = create_isotropic_fusion_point_source()
     tallies = create_tallies(geometry[1])
     settings = setup_problem()
+    settings.source = source
 
+    return materials, geometry, tallies, settings
 
 if __name__ == "__main__":
-    build_shell_model()
+    materials, geometry, tallies, settings = build_shell_model()
+    export_to_xml(materials, geometry, tallies, settings)
